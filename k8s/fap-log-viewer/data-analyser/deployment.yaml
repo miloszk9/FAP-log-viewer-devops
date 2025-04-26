@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-analyser
+  namespace: fap-log-viewer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-analyser
+  template:
+    metadata:
+      labels:
+        app: data-analyser
+    spec:
+      containers:
+        - name: data-analyser
+          image: mylosz/fap-log-viewer-analyser:0.0.1
+          env:
+            - name: NATS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: fap-config
+                  key: NATS_URL
+            - name: UPLOAD_DIR
+              valueFrom:
+                configMapKeyRef:
+                  name: fap-config
+                  key: UPLOAD_DIR
+          volumeMounts:
+            - name: uploads
+              mountPath: /data/uploads
+              readOnly: true
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: uploads-pvc

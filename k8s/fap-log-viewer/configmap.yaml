@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fap-config
+  namespace: fap-log-viewer
+data:
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_USERNAME: "postgres"
+  DB_NAME: "fap_analysis"
+  PORT: "3000"
+  NODE_ENV: "production"
+  UPLOAD_DIR: "/data/uploads"
+  NATS_URL: "nats://nats:4222"
+  BACKEND_URL: "http://http-backend:3000"
