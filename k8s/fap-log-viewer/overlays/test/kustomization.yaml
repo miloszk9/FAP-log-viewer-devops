@@ -2,9 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 bases:
+  - ../../
+  - ../../data-analyser
   - ../../frontend
   - ../../http-backend
-  - ../../data-analyser
+  - ../../nats
+  - ../../postgres
 
 images:
   - name: mylosz/fap-log-viewer-frontend:latest
