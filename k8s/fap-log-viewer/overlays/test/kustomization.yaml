@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+images:
+  - name: mylosz/fap-log-viewer-frontend:latest
+    newName: mycluster-registry:5000/mylosz/fap-log-viewer-frontend
+    newTag: 0.0.1
+  - name: mylosz/fap-log-viewer-backend
+    newName: mycluster-registry:5000/mylosz/fap-log-viewer-backend
+    newTag: 0.0.1
+  - name: mylosz/fap-log-viewer-analyser
+    newName: mycluster-registry:5000/mylosz/fap-log-viewer-analyser
+    newTag: 0.0.1

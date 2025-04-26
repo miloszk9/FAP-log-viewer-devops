@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: mycluster-registry:5000/mylosz/fap-log-viewer-frontend:0.0.1-test
+          image: mylosz/fap-log-viewer-frontend:latest
           ports:
             - containerPort: 8080
           env:

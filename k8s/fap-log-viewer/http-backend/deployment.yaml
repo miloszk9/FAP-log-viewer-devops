@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: http-backend
-          image: mylosz/fap-log-viewer-backend:0.0.1
+          image: mylosz/fap-log-viewer-backend:latest
           ports:
             - containerPort: 3000
           env:
