@@ -5,7 +5,7 @@ resources:
   - ../../base
 
 images:
-  - name: mylosz/fap-log-viewer-frontend:latest
+  - name: mylosz/fap-log-viewer-frontend
     newName: mycluster-registry:5000/mylosz/fap-log-viewer-frontend
     newTag: 0.0.1
   - name: mylosz/fap-log-viewer-backend
