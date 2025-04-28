@@ -5,31 +5,37 @@
 ### Local k3d cluster
 
 ```bash
-k3d cluster create fap --registry-create mycluster-registry:0.0.0.0:5000
+k3d cluster create fap \
+  --registry-create mycluster-registry:0.0.0.0:5000 \
+  --port "80:80@loadbalancer" \
+  --port "443:443@loadbalancer"
 ```
 
 ### Cloud k3s cluster
 
 TBD
 
-## Deployment
-
-### Manual
-
-```bash
-kubectl apply -f FAP-log-viewer-devops/argocd/fap-log-viewer/namespace.yaml
-kubectl apply -f FAP-log-viewer-devops/argocd/fap-log-viewer/ -R
-```
-
-### ArgoCD
+## Deployment (ArgoCD)
 
 ```bash
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 kubectl -n argocd port-forward svc/argocd-server 8081:443
-kubectl apply -f FAP-log-viewer-devops/argocd/fap-log-viewer-test.yaml
 kubectl apply -f FAP-log-viewer-devops/argocd/sealed-secrets.yaml
+kubectl apply -f FAP-log-viewer-devops/argocd/cert-manager.yaml
+```
+
+For local development:
+
+```bash
+kubectl apply -f FAP-log-viewer-devops/argocd/fap-log-viewer-test.yaml
+```
+
+For prod:
+
+```bash
+kubectl apply -f FAP-log-viewer-devops/argocd/fap-log-viewer-prod.yaml
 ```
 
 ## Kubeseal
@@ -41,22 +47,22 @@ kubectl apply -f FAP-log-viewer-devops/argocd/sealed-secrets.yaml
 kubectl apply -f FAP-log-viewer-devops/argocd/sealed-secrets/controller.yaml
 ```
 
-- Create public key
+- Obtain kube-seal public key
 
 ```bash
-kubeseal --format yaml --cert=public-key-cert.pem
+kubeseal --fetch-cert > public-key-cert.pem
 ```
 
 - Create sealed secret
 
 ```bash
 kubectl create secret generic fap-secrets \
-  --from-literal=DB_PASSWORD=password \
+  --from-literal=DB_PASSWORD=$(tr -dc 'A-Za-z0-9!?%=' < /dev/urandom | head -c 20) \
   -n fap-log-viewer \
   --dry-run=client \
   -o yaml | \
 kubeseal --format yaml --cert=public-key-cert.pem > \
-FAP-log-viewer-devops/k8s/fap-log-viewer/sealed_secret.yaml
+FAP-log-viewer-devops/k8s/fap-log-viewer/base/common/sealed_secret.yaml
 ```
 
 ## Other
