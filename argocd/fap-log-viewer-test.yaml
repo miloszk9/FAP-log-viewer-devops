@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fap-log-viewer-test
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/miloszk9/FAP-log-viewer-devops.git
+    targetRevision: HEAD
+    path: k8s/fap-log-viewer/overlays/test
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: fap-log-viewer
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    syncOptions:
+      - CreateNamespace=true
