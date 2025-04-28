@@ -4,16 +4,23 @@ metadata:
   name: fap-ingress
   namespace: fap-log-viewer
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: le
+    cert-manager.io/cluster-issuer: cluster-issuer
 spec:
   rules:
-    - host: fap.local # Change this to your domain
+    - host: fap.miloszk.pl
       http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
+          - backend:
               service:
                 name: frontend
                 port:
                   number: 8080
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - fap.miloszk.pl
+      secretName: fap-tls

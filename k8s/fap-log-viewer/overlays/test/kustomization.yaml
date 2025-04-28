@@ -4,6 +4,26 @@ kind: Kustomization
 resources:
   - ../../base
 
+patches:
+  - target:
+      kind: ClusterIssuer
+      name: cluster-issuer
+    patch: |-
+      - op: replace
+        path: /spec
+        value:
+          selfSigned: {}
+  - target:
+      kind: Ingress
+      name: fap-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: fap.local
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: fap.local
+
 images:
   - name: mylosz/fap-log-viewer-frontend
     newName: mycluster-registry:5000/mylosz/fap-log-viewer-frontend
