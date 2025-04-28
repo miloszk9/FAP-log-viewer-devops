@@ -2,17 +2,19 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ./common/namespace.yaml
+  - ./common/clusterissuer.yaml
   - ./common/configmap.yaml
-  - ./common/storage.yaml
+  - ./common/namespace.yaml
   - ./common/sealed_secret.yaml
+  - ./common/storage.yaml
   - ./data-analyser/deployment.yaml
   - ./frontend/deployment.yaml
-  - ./frontend/service.yaml
   - ./frontend/ingress.yaml
+  - ./frontend/middleware.yaml
+  - ./frontend/service.yaml
   - ./http-backend/deployment.yaml
   - ./http-backend/service.yaml
   - ./nats/deployment.yaml
   - ./nats/service.yaml
-  - ./postgres/sts.yaml
   - ./postgres/service.yaml
+  - ./postgres/sts.yaml
