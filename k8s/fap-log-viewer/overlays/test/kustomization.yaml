@@ -23,6 +23,13 @@ patches:
       - op: replace
         path: /spec/tls/0/hosts/0
         value: fap.local
+  - target:
+      kind: SealedSecret
+      name: fap-secrets
+    patch: |-
+      - op: replace
+        path: /spec/encryptedData/DB_PASSWORD
+        value: AgBhvICsk4CVUFCoYKI6iRq90AvHZZy4XusFKsUgClryVluNGT5oMMpbEM1F6DzTFayW6h+l1pI1/M1Ua73kLQiP5uaTq1v/gfhQ4ricTvXkuOPN2WHf7+0kvpKKl98Sh2VxjFY4ta/JU/qcIloh0d4WauPAT9CXqN+K5Rx24plw/nMNSh/annSC5uJKBSBP6ebjAHoPJmxwj+4cwuf2Y6YWwt+YMSFNGOKYGoOiN1T+q3tLw6Mx0XgeIDNnquWsZ3Sqv+cif/lQn9wnAvobZV9F47q26+6p5u4kir+AtRYqmZyJ4J+TakscVcXfgbHDJPQe87QMHUSCQyej93Abisz72zL95YXCILWZiFyhcjSPVgk5lBLOE4pqsPh+wFPzGNWhfwRFDAqha1StWw8TUUUlAusFClWCWjE50mIcNcSUgfrtIHehPjm9KfmfQzNjCL8T2Yn/7P1hYrIbxl8zoxW5EghK3kEtWR30tSc8vSGek373ZXDpIESaiSI2NP31tExgu3NVtlzAaDZhpnykftKS7S6kvTXeKyibiu0S3QUMnnP6EaroL/m+aiA73+4cKC7unBcJuBuNF/6mFOL4B7m1P14w4yhrRQY/J1pl0INGM5jU+rZtKvdnOFN0x4/zIrH9MQk8NEFb3sOcW0xcJ5tZxKjoiDdupMLGzIvYfnLyEC8vVHEkw7LAihPs4Wn0idrylPvJmZQ4N23WchSX6L0w3hJYQQ==
 
 images:
   - name: mylosz/fap-log-viewer-frontend
