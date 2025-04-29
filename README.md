@@ -11,6 +11,9 @@ k3d cluster create fap \
   --port "443:443@loadbalancer"
 ```
 
+Add to hosts file (e.g. `C:\Windows\System32\drivers\etc\hosts` in Windows):
+`127.0.0.1 fap.local`
+
 ### Cloud k3s cluster
 
 TBD
