@@ -45,3 +45,23 @@ spec:
                   number: 8080
             path: /
             pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fap-ingress-acme
+  namespace: fap-log-viewer
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+    - host: fap.miloszk.pl
+      http:
+        paths:
+          - backend:
+              service:
+                name: frontend
+                port:
+                  number: 8080
+            path: /.well-known/acme-challenge/
+            pathType: Prefix
