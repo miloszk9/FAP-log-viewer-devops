@@ -9,8 +9,6 @@ resources:
   - ./common/storage.yaml
   - ./data-analyser/deployment.yaml
   - ./frontend/deployment.yaml
-  - ./frontend/ingress.yaml
-  - ./frontend/middleware.yaml
   - ./frontend/service.yaml
   - ./http-backend/deployment.yaml
   - ./http-backend/service.yaml
@@ -18,3 +16,5 @@ resources:
   - ./nats/service.yaml
   - ./postgres/service.yaml
   - ./postgres/sts.yaml
+  - ./tls/ingress.yaml
+  - ./tls/middleware.yaml
