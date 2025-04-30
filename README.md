@@ -43,12 +43,7 @@ kubectl apply -f FAP-log-viewer-devops/argocd/fap-log-viewer-prod.yaml
 
 ## Kubeseal
 
-- Install kubeseal on local Linux host
-- Create sealed secrets controller
-
-```bash
-kubectl apply -f FAP-log-viewer-devops/argocd/sealed-secrets/controller.yaml
-```
+Prerequisite: Install kubeseal on local Linux host
 
 - Obtain kube-seal public key
 
