@@ -74,7 +74,18 @@ kubectl create secret generic fap-secrets \
   --dry-run=client \
   -o yaml | \
 kubeseal --format yaml --cert=public-key-cert.pem > \
-FAP-log-viewer-devops/k8s/fap-log-viewer/base/common/sealed_secret.yaml
+  FAP-log-viewer-devops/k8s/fap-log-viewer/base/common/sealed_secret.yaml
+```
+
+```bash
+kubectl create secret generic grafana-cloud-secret \
+  --from-literal=username="***" \
+  --from-literal=password="***" \
+  -n monitoring \
+  --dry-run=client \
+  -o yaml | \
+kubeseal --format yaml --cert=public-key-cert.pem > \
+  grafana-cloud-sealed-secret.yaml
 ```
 
 ### Craete debug curl pod
