@@ -1,0 +1,99 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: kube-prometheus-stack
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 71.1.0
+    helm:
+      values: |
+        global:
+          ipFamilyPolicy: "SingleStack"
+          ipFamilies: ["IPv4"]
+
+        kubeEtcd:
+          enabled: false
+
+        kubeControllerManager:
+          enabled: true
+          service:
+            enabled: true
+            port: 10252
+            targetPort: 10252
+
+        kubeScheduler:
+          enabled: true
+          service:
+            enabled: true
+            port: 10251
+            targetPort: 10251
+
+        kubeProxy:
+          enabled: true
+          service:
+            enabled: true
+            port: 10249
+            targetPort: 10249
+
+        defaultRules:
+          rules:
+            etcd: false
+
+        prometheus:
+          prometheusSpec:
+            retention: 24h
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+            serviceMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelectorNilUsesHelmValues: false
+            ruleSelectorNilUsesHelmValues: false
+            probeSelectorNilUsesHelmValues: false
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
+              fsGroup: 2000
+            remoteWrite:
+              - url: https://prometheus-prod-24-prod-eu-west-2.grafana.net/api/prom/push
+                basicAuth:
+                  username:
+                    name: grafana-cloud-secret
+                    key: username
+                  password:
+                    name: grafana-cloud-secret
+                    key: password
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: grafana-cloud-secret
+  namespace: monitoring
+spec:
+  encryptedData:
+    password: AgAuUwn5+QWvFWioKkQ8XdtHVsIVa5PyBP7ZNA1NIorPWYXeQOQYXgzCGG+5W9yIbBXHUmwXndRQidCdxJq0smdLkvW4lUAjvhFMby7KXvhRAkoKaJo4JxpbWJpRJW34vi0pbNshF1QpKheV7EZGkMMQfveE4iCJRaeCHXfuaCONNyUojhK+OT4aQ9EX1362nftSEA/W1c2AylbVE3dsTtVSRjd+hPxGiq4tk6YCAf0aAa7SgQDYy3BOOBbJIdkZtjwmn0Wn/zRE1344Q3WPElBHPOQ5FMS+lVxxOA4dSL66Yax5Xgv2KG4wZYa0BAc65iqjSFAQWVp0i1nqGsqtkau8cwr+jeOIOkRJ8Ip+bL+sh53aGl854XLGeD5U4wnZaxhUQE9fxmH69MGn8cpTCNLIYw4dL4HUE+i3iKgQH+o6OBxRJiH/dPnzkI5x0F6YhXGo9cwyZKwQDDWKVtaGqIVF5TtfqM5uLpg4IQ7FKRowNWhN8jY0IqtoAKt3z1hl/AtZ7rwHOdsV5Qek3y64PfSm5abxXI9HMKFIAGlng7TL8lvzrqANEAvvCiAB0nScCzzFj0ugT6K+96+nhRQh9IuRJpjZwxqBHVodhMiCCllr6qZ5DPYE8P0WoXAeBdfko0etTTASVYBbkJ+kJTvzyyeG6Mp/rnuGmSuTeiGQYV0ZJp6IM18bBPp1+CGjKbirQ8XXMbLSu2GNOm3ddUfvK5LisfLzxWA67zMl4OZrS8cYKnTHQMIyV/cwd8w7SipqgmobtX1k0YrIkcTTuJ7Q/qK5B7z8DiW4smsmmMkvbZ1dB6juGxcyL6lNULYVSR3jubcZwVq0kuL7ifFiuUMyqdnZ0SCyJ9UGY8ZH3fZrAPdp24w8uds0s/3LOSnITbwsIMThUA+Q9xtiUMJ0y+8MRaD9hesQMDWeqMF5n35p
+    username: AgAAq+CzaLO+xgix73QjAVMKN0i0y850DFfiH1pXBrpPB4SFc+o60Jllkjju5ajokPstgz6s+iYJksJ3tLpBXXRMpn/BSWS+fgaHJMaoxdZDSRH5pOSgHKWCwZnBUTLuXTT0mobDY3nWsyXNaff+8zpyVv7BOVd/J3f72i+kqRb7He1jJUa+xnuRHBCA6H1uk4TYGp5AjFrictc3xJZi7RNOwyNuyPVARinKdHte8PfbRF4pjANwZTKPMGI6EoZGfiS+t/nWxgCsVMst+zUKeXNI6HRBKC0jCCMwNgkO96FLXXAebgn2ES0RtlNEjpMlpndann4ile2f3tUy0+AVbaQf3azjLJjKf4O8whwyCdJtp8E88sGC2RjsrkmrVbHs6VnkwbNkChwDA0QOPY89alwC6lgsdjyCeFaVdHwijubHbfIHAlZnHm6DdpkqBv8EvPZmVeLUApqtZYakQgb/r9H+YHs6PaWFtVQYHE28yeVKz4/E4vUdqNDdRkenPxV7Gkbh6HvfzKH4zjeRuBl6E5HdUJ40KeyI+gpK4LwmRgkBudHBjZOte1VemrJGLKI+FcI+ZvRSWGO48tKqB0evQAHC3pe8Ob+vF/yNOdg/DClXaqk/p+WJS9LSZsIZ6h9Rfmm6aj7IuuNVJb94m3v1Q4J5HevQD5wbX9f2I9Bbm/P15fvNenf1Fw6clPphusgx17zxitS9jwF4
+  template:
+    metadata:
+      creationTimestamp: null
+      name: grafana-cloud-secret
+      namespace: monitoring
