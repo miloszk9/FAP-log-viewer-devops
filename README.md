@@ -5,10 +5,7 @@
 ### Local k3d cluster
 
 ```bash
-k3d cluster create fap \
-  --registry-create mycluster-registry:0.0.0.0:5000 \
-  --port "80:80@loadbalancer" \
-  --port "443:443@loadbalancer"
+k3d cluster create --config k3d-local.yaml
 ```
 
 Add to hosts file (e.g. `C:\Windows\System32\drivers\etc\hosts` in Windows):
@@ -16,9 +13,22 @@ Add to hosts file (e.g. `C:\Windows\System32\drivers\etc\hosts` in Windows):
 
 ### Cloud k3s cluster
 
-TBD
+On master node:
 
-## Deployment (ArgoCD)
+```bash
+vim /etc/rancher/k3s/config.yaml # Put content from k3s-prod-config.yaml
+curl -sfL https://get.k3s.io | sh -
+```
+
+On worker nodes:
+
+```bash
+server_0_ip=10.0.0.23 # IP of the master node
+token= # Get from master node from /var/lib/rancher/k3s/server/token
+curl -sfL https://get.k3s.io | K3S_URL=https://${server_0_ip}:6443 K3S_TOKEN=${token} sh -
+```
+
+## Deployment using ArgoCD
 
 ```bash
 kubectl create namespace argocd
@@ -32,16 +42,20 @@ kubectl apply -f FAP-log-viewer-devops/argocd/cert-manager.yaml
 For local development:
 
 ```bash
+kubectl apply -f FAP-log-viewer-devops/argocd/prometheus-stack-test.yaml
 kubectl apply -f FAP-log-viewer-devops/argocd/fap-log-viewer-test.yaml
 ```
 
 For prod:
 
 ```bash
+kubectl apply -f FAP-log-viewer-devops/argocd/prometheus-stack-prod.yaml
 kubectl apply -f FAP-log-viewer-devops/argocd/fap-log-viewer-prod.yaml
 ```
 
-## Kubeseal
+## Useful procedures
+
+### Generate sealed secret
 
 Prerequisite: Install kubeseal on local Linux host
 
@@ -63,19 +77,8 @@ kubeseal --format yaml --cert=public-key-cert.pem > \
 FAP-log-viewer-devops/k8s/fap-log-viewer/base/common/sealed_secret.yaml
 ```
 
-## Other
-
-- Craete debug curl pod
+### Craete debug curl pod
 
 ```bash
 kubectl -n fap-log-viewer run curl-test --image=alpine/curl -- sleep infinity
 ```
-
-- Push to local registry
-
-```bash
-docker build -t mylosz/fap-log-viewer-frontend:0.0.1 ./FAP-log-viewer/frontend
-docker tag mylosz/fap-log-viewer-frontend:0.0.1 localhost:5000/mylosz/fap-log-viewer-frontend:0.0.1
-```
-
-Use `mycluster-registry:5000/mylosz/fap-log-viewer-frontend:0.0.1` as k8s image
