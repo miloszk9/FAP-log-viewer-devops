@@ -8,6 +8,8 @@ resources:
   - ./common/sealed_secret.yaml
   - ./common/storage.yaml
   - ./data-analyser/deployment.yaml
+  - ./email-receiver/deployment.yaml
+  - ./email-receiver/sealed_email_credentials.yaml
   - ./frontend/deployment.yaml
   - ./frontend/service.yaml
   - ./http-backend/deployment.yaml

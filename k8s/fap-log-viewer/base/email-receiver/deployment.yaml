@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-receiver
+  namespace: fap-log-viewer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-receiver
+  template:
+    metadata:
+      labels:
+        app: email-receiver
+    spec:
+      containers:
+        - name: email-receiver
+          image: mylosz/fap-log-viewer-email-receiver:latest
+          volumeMounts:
+            - name: secret-volume
+              mountPath: /etc/secrets
+              readOnly: true
+        volumes:
+          - name: secret-volume
+            secret:
+              secretName: email-credentials
