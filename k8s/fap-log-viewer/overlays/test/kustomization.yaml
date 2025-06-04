@@ -48,3 +48,6 @@ images:
   - name: mylosz/fap-log-viewer-analyser
     newName: mycluster-registry:5000/mylosz/fap-log-viewer-analyser
     newTag: 0.0.1
+  - name: mylosz/fap-log-viewer-email-receiver
+    newName: mycluster-registry:5000/mylosz/fap-log-viewer-email-receiver
+    newTag: 0.0.1
