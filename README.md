@@ -62,7 +62,7 @@ Prerequisite: Install kubeseal on local Linux host
 - Obtain kube-seal public key
 
 ```bash
-kubeseal --fetch-cert > public-key-cert.pem
+kubeseal --fetch-cert --controller-name=sealed-secrets > public-key-cert.pem
 ```
 
 - Create sealed secret
@@ -86,6 +86,16 @@ kubectl create secret generic grafana-cloud-secret \
   -o yaml | \
 kubeseal --format yaml --cert=public-key-cert.pem > \
   grafana-cloud-sealed-secret.yaml
+```
+
+```bash
+kubectl create secret generic email-credentials \
+  --from-file=FAP-log-viewer/backend/email-receiver/credentials.json \
+  -n fap-log-viewer \
+  --dry-run=client \
+  -o yaml | \
+kubeseal --format yaml --cert=public-key-cert.pem > \
+  FAP-log-viewer-devops/k8s/fap-log-viewer/base/common/sealed_email_credentials.yaml
 ```
 
 ### Craete debug curl pod
