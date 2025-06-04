@@ -20,7 +20,7 @@ spec:
             - name: secret-volume
               mountPath: /etc/secrets
               readOnly: true
-        volumes:
-          - name: secret-volume
-            secret:
-              secretName: email-credentials
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: email-credentials
