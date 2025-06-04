@@ -95,7 +95,7 @@ kubectl create secret generic email-credentials \
   --dry-run=client \
   -o yaml | \
 kubeseal --format yaml --cert=public-key-cert.pem > \
-  FAP-log-viewer-devops/k8s/fap-log-viewer/base/common/sealed_email_credentials.yaml
+  FAP-log-viewer-devops/k8s/fap-log-viewer/base/email-receiver/sealed_email_credentials.yaml
 ```
 
 ### Craete debug curl pod
