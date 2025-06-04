@@ -8,11 +8,19 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.tls.certresolver: le
     cert-manager.io/cluster-issuer: cluster-issuer
+    traefik.ingress.kubernetes.io/router.middlewares: fap-log-viewer-stripprefix@kubernetescrd
 spec:
   rules:
     - host: fap.miloszk.pl
       http:
         paths:
+          - backend:
+              service:
+                name: http-backend
+                port:
+                  number: 3000
+            path: /api
+            pathType: Prefix
           - backend:
               service:
                 name: frontend
@@ -38,10 +46,5 @@ spec:
     - host: fap.miloszk.pl
       http:
         paths:
-          - backend:
-              service:
-                name: frontend
-                port:
-                  number: 8080
-            path: /
+          - path: /*
             pathType: Prefix

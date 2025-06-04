@@ -7,3 +7,13 @@ spec:
   redirectScheme:
     scheme: https
     permanent: true
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: fap-log-viewer-stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /api
+    forceSlash: false
