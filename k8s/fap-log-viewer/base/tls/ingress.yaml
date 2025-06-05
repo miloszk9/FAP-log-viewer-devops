@@ -46,5 +46,17 @@ spec:
     - host: fap.miloszk.pl
       http:
         paths:
-          - path: /*
+          - backend:
+              service:
+                name: http-backend
+                port:
+                  number: 3000
+            path: /api
+            pathType: Prefix
+          - backend:
+              service:
+                name: frontend
+                port:
+                  number: 8080
+            path: /
             pathType: Prefix
