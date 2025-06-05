@@ -8,7 +8,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.tls.certresolver: le
     cert-manager.io/cluster-issuer: cluster-issuer
-    traefik.ingress.kubernetes.io/router.middlewares: fap-log-viewer-stripprefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: strip-prefix@kubernetescrd
 spec:
   rules:
     - host: fap.miloszk.pl
@@ -40,7 +40,7 @@ metadata:
   namespace: fap-log-viewer
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
-    traefik.ingress.kubernetes.io/router.middlewares: fap-log-viewer-https-redirect@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: https-redirect@kubernetescrd
 spec:
   rules:
     - host: fap.miloszk.pl
