@@ -11,6 +11,24 @@ k3d cluster create --config k3d-local.yaml
 Add to hosts file (e.g. `C:\Windows\System32\drivers\etc\hosts` in Windows):
 `127.0.0.1 fap.local`
 
+Build local images:
+
+```bash
+cd FAP-log-viewer/frontend; make docker-local tag=0.0.1; cd -;
+cd FAP-log-viewer/backend/data-analyser; make docker-local tag=0.0.1; cd -;
+cd FAP-log-viewer/backend/email-receiver; make docker-local tag=0.0.1; cd -;
+cd FAP-log-viewer/backend/http-backend; make docker-local tag=0.0.1; cd -;
+```
+
+Push local images:
+
+```bash
+k3d image import mylosz/fap-log-viewer-analyser:0.0.1 -c fap
+k3d image import mylosz/fap-log-viewer-backend:0.0.1 -c fap
+k3d image import mylosz/fap-log-viewer-email-receiver:0.0.1 -c fap
+k3d image import mylosz/fap-log-viewer-frontend:0.0.1 -c fap
+```
+
 ### Cloud k3s cluster
 
 On master node:

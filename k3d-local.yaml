@@ -3,11 +3,6 @@ kind: Simple
 metadata:
   name: fap
 servers: 1
-registries:
-  create:
-    name: mycluster-registry
-    host: "0.0.0.0"
-    hostPort: "5000"
 ports:
   - port: 80:80
     nodeFilters:
