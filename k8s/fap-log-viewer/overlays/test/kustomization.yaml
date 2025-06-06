@@ -24,6 +24,13 @@ patches:
         path: /spec/tls/0/hosts/0
         value: fap.local
   - target:
+      kind: Ingress
+      name: fap-ingress-http
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: fap.local
+  - target:
       kind: SealedSecret
       name: fap-secrets
     patch: |-
