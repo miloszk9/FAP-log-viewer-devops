@@ -7,13 +7,3 @@ spec:
   redirectScheme:
     scheme: https
     permanent: true
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: strip-prefix
-spec:
-  stripPrefix:
-    prefixes:
-      - /api
-    forceSlash: false

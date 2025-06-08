@@ -6,7 +6,6 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.middlewares: fap-log-viewer-strip-prefix@kubernetescrd
 spec:
   rules:
     - host: fap.miloszk.pl

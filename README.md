@@ -121,3 +121,12 @@ kubeseal --format yaml --cert=public-key-cert.pem > \
 ```bash
 kubectl -n fap-log-viewer run curl-test --image=alpine/curl -- sleep infinity
 ```
+
+### Delete docker image on k3d cluster
+
+```bash
+k3d image rm mylosz/fap-log-viewer-analyser:0.0.1 -c fap
+k3d image rm mylosz/fap-log-viewer-backend:0.0.1 -c fap
+k3d image rm mylosz/fap-log-viewer-email-receiver:0.0.1 -c fap
+k3d image rm mylosz/fap-log-viewer-frontend:0.0.1 -c fap
+```
