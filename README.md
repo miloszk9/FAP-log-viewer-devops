@@ -37,6 +37,13 @@ token= # Get from master node from /var/lib/rancher/k3s/server/token
 curl -sfL https://get.k3s.io | K3S_URL=https://${server_0_ip}:6443 K3S_TOKEN=${token} sh -
 ```
 
+```bash
+cd FAP-log-viewer/frontend; make docker-prod tag=0.0.3; cd -;
+cd FAP-log-viewer/backend/data-analyser; make docker-prod tag=0.0.3; cd -;
+cd FAP-log-viewer/backend/email-receiver; make docker-prod tag=0.0.3; cd -;
+cd FAP-log-viewer/backend/http-backend; make docker-prod tag=0.0.3; cd -;
+```
+
 ## Deployment using ArgoCD
 
 ```bash
