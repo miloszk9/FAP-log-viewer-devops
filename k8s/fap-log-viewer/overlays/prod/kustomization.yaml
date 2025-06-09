@@ -12,4 +12,4 @@ images:
   - name: mylosz/fap-log-viewer-analyser
     newTag: 0.0.3
   - name: mylosz/fap-log-viewer-email-receiver
-    newTag: 0.0.3
+    newTag: 0.0.4
