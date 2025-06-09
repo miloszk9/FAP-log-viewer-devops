@@ -14,19 +14,10 @@ Add to hosts file (e.g. `C:\Windows\System32\drivers\etc\hosts` in Windows):
 Build local images:
 
 ```bash
-cd FAP-log-viewer/frontend; make docker-local tag=0.0.1; cd -;
-cd FAP-log-viewer/backend/data-analyser; make docker-local tag=0.0.1; cd -;
-cd FAP-log-viewer/backend/email-receiver; make docker-local tag=0.0.1; cd -;
-cd FAP-log-viewer/backend/http-backend; make docker-local tag=0.0.1; cd -;
-```
-
-Push local images:
-
-```bash
-k3d image import mylosz/fap-log-viewer-analyser:0.0.1 -c fap
-k3d image import mylosz/fap-log-viewer-backend:0.0.1 -c fap
-k3d image import mylosz/fap-log-viewer-email-receiver:0.0.1 -c fap
-k3d image import mylosz/fap-log-viewer-frontend:0.0.1 -c fap
+cd FAP-log-viewer/frontend; make docker-k3d tag=0.0.1; cd -;
+cd FAP-log-viewer/backend/data-analyser; make docker-k3d tag=0.0.1; cd -;
+cd FAP-log-viewer/backend/email-receiver; make docker-k3d tag=0.0.1; cd -;
+cd FAP-log-viewer/backend/http-backend; make docker-k3d tag=0.0.1; cd -;
 ```
 
 ### Cloud k3s cluster
@@ -108,7 +99,7 @@ kubeseal --format yaml --cert=public-key-cert.pem > \
 
 ```bash
 kubectl create secret generic email-credentials \
-  --from-file=FAP-log-viewer/backend/email-receiver/credentials.json \
+  --from-file=FAP-log-viewer/backend/email-receiver/token.json \
   -n fap-log-viewer \
   --dry-run=client \
   -o yaml | \
@@ -125,8 +116,6 @@ kubectl -n fap-log-viewer run curl-test --image=alpine/curl -- sleep infinity
 ### Delete docker image on k3d cluster
 
 ```bash
-k3d image rm mylosz/fap-log-viewer-analyser:0.0.1 -c fap
-k3d image rm mylosz/fap-log-viewer-backend:0.0.1 -c fap
-k3d image rm mylosz/fap-log-viewer-email-receiver:0.0.1 -c fap
-k3d image rm mylosz/fap-log-viewer-frontend:0.0.1 -c fap
+docker exec k3d-fap-server-0 sh -c "ctr image rm \$(ctr image list -q | grep fap-log-viewer-backend | head -1)"
+docker exec k3d-fap-server-0 sh -c "ctr image list -q | grep fap-log-viewer-backend"
 ```
