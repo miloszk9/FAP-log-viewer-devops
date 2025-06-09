@@ -7,15 +7,3 @@ spec:
   redirectScheme:
     scheme: https
     permanent: true
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: block-email
-  namespace: fap-log-viewer
-spec:
-  plugin:
-    block:
-      paths:
-        - /api/email
-      statusCode: 403

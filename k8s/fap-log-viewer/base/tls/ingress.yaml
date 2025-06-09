@@ -6,7 +6,6 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.middlewares: fap-log-viewer-block-email@kubernetescrd
 spec:
   rules:
     - host: fap.miloszk.pl
@@ -17,7 +16,21 @@ spec:
                 name: http-backend
                 port:
                   number: 3000
-            path: /api
+            path: /api/average
+            pathType: Prefix
+          - backend:
+              service:
+                name: http-backend
+                port:
+                  number: 3000
+            path: /api/analyse
+            pathType: Prefix
+          - backend:
+              service:
+                name: http-backend
+                port:
+                  number: 3000
+            path: /api/auth
             pathType: Prefix
           - backend:
               service:
