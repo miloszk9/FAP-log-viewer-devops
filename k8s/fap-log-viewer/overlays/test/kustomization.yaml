@@ -44,6 +44,15 @@ patches:
       - op: replace
         path: /spec/encryptedData/token.json
         value: AgDJb6AWnZ+9JDd8NRNFLHEilT2wcqxtZpKAzO+vxvu+0TONA3CH7x3PBnH5jDE14YA2jUi5Lflm80UR0/0ChTHZ+I/JwbwV1C//GGwy+ORRhQrjD4Z/OtrxewQqvJkZA4GsdhrwiGkDyLlwvHu1K/BfGKG7DMdbKoydgBaq595nqU8BaG/bZd3HfBpoyrwi/1T5hJHiBCevHS/dG4Je0w4aC3PEzU7+E0QWSh3153FUrX2kWq/NmpYjIKVcy/eUqtDKVaoIlR+xCfZI7JUt9ZanDNkYCLPactTSfH8d44Nsgd07hAMEvKP1tjgqCdeGFZ7H8SpRASLkiHV5fwKansEnWxw7TsA61e+6gOfvd2NkxgZ8QEiBkdGqOzlHyi6XbXqIraMnpW1IjycRlveUR7riNnqr9Jz9TT4s6uLM71Q/2dg6mtrDqWbn0iKrWxYQaKrXgpfF4IqHqRr174gj2x66VD5W+6BbwzNZUdWMUp+6tXawciWFM6wRY0F/D68ywiHpNyQqHMcNQqbiWv9n11Gr8s5lCVkkl2fzbXXpPWUt0I3FRsllAZpcCTxQfQyLb8d98ZG/rUWQGbeSRDmNsGpRyDJtlKpDVzh5sEaZYxWeSNbHXgieltdLlBqW3vcK2Zk5s3F+5dD6uQ1MqmAo//iZDjgE5bK/pMTnuoSXg73GqPpIj/KhahPG5WfWb6ZnqpSXS0atGPUyohcHIUVFnI4Mk4GqOoV715f5iVnurgSCMmesmq/UKb9p8hUV+KdSoAoj18jSTLzhVO8GN+iTpL61VpbYeTiryStzAwRRwEsg1Ut3A7yZaHpjv5Xz9LMpdaUg85PRmNdVJ49+mHR87ilXKC7MDgfna4L+z8FlTFU2YXtpxWQ3M+A9Upiri4YybsnPwC8kvSe5N+rbxetJF+nUZ07mbGXz2O4wRUfM5iq8w5aqRqMqg868MEA5Ch/VOLLzZKRdlAfVSHFge45SfVfQRUIyNI2zexu8cWYJf4X6guML5bok7y1oo+MViGsUxmmAqnB44UnXJr8t76IwlSKIBp2fVsqvfKL04uw6+SPwSt4hQLR80F7Xp4hzLeCaMr0ttemFMEkHJpCgfwqzA8rGPXxvsHLjKXtkLUGl7gqZdBtTUgp4l9QHBVOyj8ocqSbZd3p5dP+Oi0YLtpu4SS88EWQA+F0kShkqvI2dbs37J1oqfZoAtG43LOVUbT5Yho6XGz03WnWHaFeYwsYJ4jRM7fzHNcSr/C/NlALZqL8hLARqp07oDwKylrPvwpk5f/HHikq7ezEHsr/1HccJUFTLEaFlayvNTs+p9AbdprLxXtL/nIJa2sdXxWnMfljkRi2Z2E9AxPFDqlzxxpoHQhU07+KT3kfYPBvhObQEPUDRWTD3OYQNz2IyN9PdIV+4WRfE9hSUpNvOi5/sC9aepQrP3PteU/++1sfNJ7CLrdWlyX92bf611L3QomzPtu54TVlmJkL/jHJFaw0+nBSLjJlCbfjir0F3j5R1PJKAnGOPx9odm7P9EglQlVp37UTSVudiQvI41O4ik0q5yTVHZqzLczAY9fC6FWlq/gp51iEZnM3nXKQ5HSwsZ3Wy0P03NivNfNc170VihjvtLc4eWFALh4CgsRBdNo0q04QbSiYmtq0j46NYGEn8KEztNuySKC5lxj6wrAgY8ker7iaV/NLPrJIr2AjU4wRPyD5Mgofoj4iEfPWbaGhF
+  - target:
+      kind: Deployment
+      name: email-receiver
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: ENV
+          value: development
 
 images:
   - name: mylosz/fap-log-viewer-frontend
