@@ -4,12 +4,15 @@ metadata:
   name: fap-config
   namespace: fap-log-viewer
 data:
+  BACKEND_URL: "http://http-backend:3000"
   DB_HOST: "postgres"
+  DB_NAME: "fap_analysis"
   DB_PORT: "5432"
   DB_USERNAME: "postgres"
-  DB_NAME: "fap_analysis"
-  PORT: "3000"
-  NODE_ENV: "production"
-  UPLOAD_DIR: "/data/uploads"
+  EMAIL_ENDPOINT: "process"
+  EMAIL_PORT: "8000"
+  EMAIL_URL: "email-receiver"
   NATS_URL: "nats://nats:4222"
-  BACKEND_URL: "http://http-backend:3000"
+  NODE_ENV: "production"
+  PORT: "3000"
+  UPLOAD_DIR: "/data/uploads"
