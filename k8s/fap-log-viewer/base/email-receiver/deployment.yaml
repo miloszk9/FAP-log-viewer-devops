@@ -20,6 +20,7 @@ spec:
             - name: secret-volume
               mountPath: /etc/secrets
               readOnly: true
+          env: []
       volumes:
         - name: secret-volume
           secret:
