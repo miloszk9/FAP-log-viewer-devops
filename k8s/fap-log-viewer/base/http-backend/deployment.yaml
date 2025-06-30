@@ -64,6 +64,21 @@ spec:
                 configMapKeyRef:
                   name: fap-config
                   key: NATS_URL
+            - name: EMAIL_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: fap-config
+                  key: EMAIL_ENDPOINT
+            - name: EMAIL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: fap-config
+                  key: EMAIL_PORT
+            - name: EMAIL_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: fap-config
+                  key: EMAIL_URL
           volumeMounts:
             - name: uploads
               mountPath: /data/uploads
