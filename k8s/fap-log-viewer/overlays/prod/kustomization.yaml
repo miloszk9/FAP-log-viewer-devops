@@ -8,7 +8,7 @@ images:
   - name: mylosz/fap-log-viewer-frontend
     newTag: 0.0.7
   - name: mylosz/fap-log-viewer-backend
-    newTag: 0.0.5
+    newTag: 0.0.6
   - name: mylosz/fap-log-viewer-analyser
     newTag: 0.0.6
   - name: mylosz/fap-log-viewer-email-receiver
