@@ -79,6 +79,11 @@ spec:
                 configMapKeyRef:
                   name: fap-config
                   key: EMAIL_URL
+            - name: DATA_ANALYSER_VERSION
+              valueFrom:
+                configMapKeyRef:
+                  name: fap-config
+                  key: DATA_ANALYSER_VERSION
           volumeMounts:
             - name: uploads
               mountPath: /data/uploads
