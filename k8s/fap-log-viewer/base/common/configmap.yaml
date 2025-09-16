@@ -5,7 +5,7 @@ metadata:
   namespace: fap-log-viewer
 data:
   BACKEND_URL: "http://http-backend:3000"
-  DATA_ANALYSER_VERSION: "0.0.9"
+  DATA_ANALYSER_VERSION: "0.0.10"
   DB_HOST: "postgres"
   DB_NAME: "fap_analysis"
   DB_PORT: "5432"
