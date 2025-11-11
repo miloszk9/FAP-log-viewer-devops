@@ -16,34 +16,13 @@ spec:
                 name: http-backend
                 port:
                   number: 3000
-            path: /api
-            pathType: Exact
-          - backend:
-              service:
-                name: http-backend
-                port:
-                  number: 3000
-            path: /api/average
-            pathType: Prefix
-          - backend:
-              service:
-                name: http-backend
-                port:
-                  number: 3000
-            path: /api/analyse
-            pathType: Prefix
-          - backend:
-              service:
-                name: http-backend
-                port:
-                  number: 3000
-            path: /api/auth
+            path: /api/
             pathType: Prefix
           - backend:
               service:
                 name: frontend
                 port:
-                  number: 8080
+                  number: 4321
             path: /
             pathType: Prefix
   tls:
@@ -75,6 +54,6 @@ spec:
               service:
                 name: frontend
                 port:
-                  number: 8080
+                  number: 4321
             path: /
             pathType: Prefix

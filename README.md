@@ -14,10 +14,10 @@ Add to hosts file (e.g. `C:\Windows\System32\drivers\etc\hosts` in Windows):
 Build local images:
 
 ```bash
-cd FAP-log-viewer/frontend; make docker-k3d tag=0.0.1; cd -;
-cd FAP-log-viewer/backend/data-analyser; make docker-k3d tag=0.0.1; cd -;
-cd FAP-log-viewer/backend/email-receiver; make docker-k3d tag=0.0.1; cd -;
-cd FAP-log-viewer/backend/http-backend; make docker-k3d tag=0.0.1; cd -;
+cd ../FAP-log-viewer/frontend; make docker-k3d tag=0.0.1; cd -;
+cd ../FAP-log-viewer/backend/data-analyser; make docker-k3d tag=0.0.1; cd -;
+cd ../FAP-log-viewer/backend/email-receiver; make docker-k3d tag=0.0.1; cd -;
+cd ../FAP-log-viewer/backend/http-backend; make docker-k3d tag=0.0.1; cd -;
 ```
 
 ### Cloud k3s cluster
@@ -38,10 +38,10 @@ curl -sfL https://get.k3s.io | K3S_URL=https://${server_0_ip}:6443 K3S_TOKEN=${t
 ```
 
 ```bash
-cd FAP-log-viewer/frontend; make docker-prod tag=0.0.9; cd -;
-cd FAP-log-viewer/backend/data-analyser; make docker-prod tag=0.0.10; cd -;
-cd FAP-log-viewer/backend/email-receiver; make docker-prod tag=0.0.5; cd -;
-cd FAP-log-viewer/backend/http-backend; make docker-prod tag=0.0.7; cd -;
+cd ../FAP-log-viewer/frontend; make docker-prod tag=1.0.0; cd -;
+cd ../FAP-log-viewer/backend/data-analyser; make docker-prod tag=1.0.0; cd -;
+cd ../FAP-log-viewer/backend/email-receiver; make docker-prod tag=1.0.0; cd -;
+cd ../FAP-log-viewer/backend/http-backend; make docker-prod tag=1.0.0; cd -;
 ```
 
 ## Deployment using ArgoCD
@@ -125,4 +125,16 @@ kubectl -n fap-log-viewer run curl-test --image=alpine/curl -- sleep infinity
 ```bash
 docker exec k3d-fap-server-0 sh -c "ctr image rm \$(ctr image list -q | grep fap-log-viewer-backend | head -1)"
 docker exec k3d-fap-server-0 sh -c "ctr image list -q | grep fap-log-viewer-backend"
+```
+
+### Backup & restore Postgres content
+
+```bash
+docker exec -t <src_db_container> pg_dump -U <db_user> -d <db_name> --format=custom --file=/tmp/fap_backup.dump # dump prod
+docker cp <src_db_container>:/tmp/fap_backup.dump /abs/path/fap_backup.dump # copy to host
+docker exec <src_db_container> rm /tmp/fap_backup.dump # clean prod temp
+docker exec -it <dst_db_container> psql -U <db_user> -c "DROP DATABASE IF EXISTS <db_name>; CREATE DATABASE <db_name>;" # reset local DB
+docker cp /abs/path/fap_backup.dump <dst_db_container>:/tmp/fap_backup.dump # copy dump in
+docker exec -it <dst_db_container> pg_restore --clean --if-exists --no-owner --no-privileges -U <db_user> -d <db_name> /tmp/fap_backup.dump # restore local
+rm /abs/path/fap_backup.dump # remove local dump
 ```

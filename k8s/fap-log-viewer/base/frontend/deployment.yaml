@@ -17,10 +17,4 @@ spec:
         - name: frontend
           image: mylosz/fap-log-viewer-frontend:latest
           ports:
-            - containerPort: 8080
-          env:
-            - name: BACKEND_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: fap-config
-                  key: BACKEND_URL
+            - containerPort: 4321
