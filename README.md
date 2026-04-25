@@ -44,6 +44,9 @@ cd ../FAP-log-viewer/backend/email-receiver; make docker-prod tag=1.0.1; cd -;
 cd ../FAP-log-viewer/backend/http-backend; make docker-prod tag=1.0.0; cd -;
 ```
 
+Generate kubectl token to access the k3s remotly:
+https://docs.k3s.io/cluster-access
+
 ## Deployment using ArgoCD
 
 ```bash
