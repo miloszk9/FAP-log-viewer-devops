@@ -4,6 +4,7 @@ metadata:
   name: fap-ingress
   namespace: fap-log-viewer
   annotations:
+    cert-manager.io/cluster-issuer: "cluster-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
