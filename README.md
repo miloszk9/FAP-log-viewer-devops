@@ -133,6 +133,11 @@ docker exec k3d-fap-server-0 sh -c "ctr image list -q | grep fap-log-viewer-back
 ### Backup & restore Postgres content
 
 ```bash
+kubectl -n fap-log-viewer exec -t postgres-0 -- pg_dump -U postgres -d fap_analysis --format=custom --file=/tmp/fap_backup.dump
+kubectl -n fap-log-viewer cp postgres-0:/tmp/fap_backup.dump ./fap_backup.dump
+```
+
+```bash
 docker exec -t <src_db_container> pg_dump -U <db_user> -d <db_name> --format=custom --file=/tmp/fap_backup.dump # dump prod
 docker cp <src_db_container>:/tmp/fap_backup.dump /abs/path/fap_backup.dump # copy to host
 docker exec <src_db_container> rm /tmp/fap_backup.dump # clean prod temp
