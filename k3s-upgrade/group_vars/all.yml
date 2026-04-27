@@ -1,0 +1,10 @@
+---
+# Variable defining the exact target version.
+# Always check available patch/minor releases at: https://github.com/k3s-io/k3s/releases
+k3s_target_version: "v1.32.13+k3s1"
+
+# Path to the kubeconfig file on the master machine (default for K3s)
+k3s_kubeconfig: "/etc/rancher/k3s/k3s.yaml"
+
+# Target architecture for the K3s binary (e.g., amd64, arm64)
+k3s_architecture: "arm64"

@@ -1,0 +1,271 @@
+---
+# ==========================================
+# PLAY 0: DOWNLOAD K3S BINARY (LOCALHOST)
+# ==========================================
+- name: Download K3s Binary
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Ensure local temporary directory exists
+      ansible.builtin.file:
+        path: "/tmp/k3s_binaries"
+        state: directory
+        mode: '0755'
+      tags: [k3s_upgrade]
+
+    - name: Check if K3s binary is already downloaded
+      ansible.builtin.stat:
+        path: "/tmp/k3s_binaries/k3s-{{ k3s_target_version }}-{{ k3s_architecture }}"
+      register: k3s_binary_stat
+      tags: [k3s_upgrade]
+
+    - name: Download K3s binary
+      ansible.builtin.get_url:
+        url: "https://github.com/k3s-io/k3s/releases/download/{{ k3s_target_version }}/k3s{% if k3s_architecture != 'amd64' %}-{{ k3s_architecture }}{% endif %}"
+        dest: "/tmp/k3s_binaries/k3s-{{ k3s_target_version }}-{{ k3s_architecture }}"
+        mode: '0755'
+      when: not k3s_binary_stat.stat.exists
+      tags: [k3s_upgrade]
+
+
+# ==========================================
+# PLAY 1: UPGRADE MASTER NODE (CONTROL PLANE)
+# ==========================================
+- name: Upgrade K3s Master Node
+  hosts: k3s_master
+  become: true
+  serial: 1
+  tasks:
+    - name: Check current K3s version on the node
+      ansible.builtin.shell: k3s --version | head -n 1 | awk '{print $3}'
+      register: current_k3s_version
+      changed_when: false
+      ignore_errors: true
+      tags:
+        - k3s_upgrade
+
+    - name: Cordon Master Node
+      ansible.builtin.command: k3s kubectl cordon {{ inventory_hostname }}
+      environment:
+        KUBECONFIG: "{{ k3s_kubeconfig }}"
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+    - name: Drain Master Node
+      ansible.builtin.command: >
+        k3s kubectl drain {{ inventory_hostname }} 
+        --ignore-daemonsets 
+        --delete-emptydir-data 
+        --force 
+        --grace-period=60
+      environment:
+        KUBECONFIG: "{{ k3s_kubeconfig }}"
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+    - name: Update APT cache and safe OS package upgrade (Minor/Patch Ubuntu)
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: safe
+        cache_valid_time: 3600
+      tags:
+        - os_upgrade
+
+    - name: Check if kernel/OS requires a reboot
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_required
+      tags:
+        - os_upgrade
+
+    - name: Reboot machine (if required by OS)
+      ansible.builtin.reboot:
+        msg: "Auto OS upgrade reboot"
+        reboot_timeout: 600
+      when: reboot_required.stat.exists
+      tags:
+        - os_upgrade
+
+    - name: Backup current K3s binary
+      ansible.builtin.copy:
+        src: /usr/local/bin/k3s
+        dest: "/tmp/k3s-backup-{{ current_k3s_version.stdout }}"
+        remote_src: true
+        mode: '0755'
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+    - name: Distribute K3s binary to Master
+      ansible.builtin.copy:
+        src: "/tmp/k3s_binaries/k3s-{{ k3s_target_version }}-{{ k3s_architecture }}"
+        dest: /usr/local/bin/k3s
+        mode: '0755'
+        owner: root
+        group: root
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+    - name: Restart K3s Master service
+      ansible.builtin.systemd:
+        name: k3s
+        state: restarted
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+    - name: Wait for K3s Master service to start
+      ansible.builtin.systemd:
+        name: k3s
+        state: started
+      register: k3s_service
+      until: k3s_service.status.ActiveState == "active"
+      retries: 5
+      delay: 10
+      tags:
+        - k3s_upgrade
+
+    - name: Wait for 'Ready' status for the Master node
+      ansible.builtin.command: k3s kubectl get node {{ inventory_hostname }} -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
+      environment:
+        KUBECONFIG: "{{ k3s_kubeconfig }}"
+      register: node_status
+      until: node_status.stdout == "True"
+      retries: 15
+      delay: 10
+      tags:
+        - k3s_upgrade
+
+    - name: Uncordon Master Node (Restore to the working pool)
+      ansible.builtin.command: k3s kubectl uncordon {{ inventory_hostname }}
+      environment:
+        KUBECONFIG: "{{ k3s_kubeconfig }}"
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+
+# ==========================================
+# PLAY 2: UPGRADE WORKER NODES (AGENTS)
+# ==========================================
+- name: Upgrade K3s Worker Nodes
+  hosts: k3s_worker
+  become: true
+  serial: 1
+  tasks:
+    - name: Check current K3s Agent version on the node
+      ansible.builtin.shell: k3s --version | head -n 1 | awk '{print $3}'
+      register: current_k3s_version
+      changed_when: false
+      ignore_errors: true
+      tags:
+        - k3s_upgrade
+
+    - name: Cordon Worker Node
+      ansible.builtin.command: k3s kubectl cordon {{ inventory_hostname }}
+      environment:
+        KUBECONFIG: "{{ k3s_kubeconfig }}"
+      delegate_to: "{{ groups['k3s_master'][0] }}"
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+    - name: Drain Worker Node
+      ansible.builtin.command: >
+        k3s kubectl drain {{ inventory_hostname }} 
+        --ignore-daemonsets 
+        --delete-emptydir-data 
+        --force 
+        --grace-period=60
+      environment:
+        KUBECONFIG: "{{ k3s_kubeconfig }}"
+      delegate_to: "{{ groups['k3s_master'][0] }}"
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+    - name: Update APT cache and safe OS package upgrade (Minor/Patch Ubuntu)
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: safe
+      tags:
+        - os_upgrade
+
+    - name: Check if kernel/OS requires a reboot
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_required
+      tags:
+        - os_upgrade
+
+    - name: Reboot Agent
+      ansible.builtin.reboot:
+        msg: "Auto OS upgrade reboot."
+        reboot_timeout: 600
+      when: reboot_required.stat.exists
+      tags:
+        - os_upgrade
+
+    - name: Backup current K3s binary
+      ansible.builtin.copy:
+        src: /usr/local/bin/k3s
+        dest: "/tmp/k3s-backup-{{ current_k3s_version.stdout }}"
+        remote_src: true
+        mode: '0755'
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+    - name: Distribute K3s binary to Agent
+      ansible.builtin.copy:
+        src: "/tmp/k3s_binaries/k3s-{{ k3s_target_version }}-{{ k3s_architecture }}"
+        dest: /usr/local/bin/k3s
+        mode: '0755'
+        owner: root
+        group: root
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+    - name: Restart K3s Agent service
+      ansible.builtin.systemd:
+        name: k3s-agent
+        state: restarted
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
+
+    - name: Wait for K3s Agent service to start
+      ansible.builtin.systemd:
+        name: k3s-agent
+        state: started
+      register: k3s_service_agent
+      until: k3s_service_agent.status.ActiveState == "active"
+      retries: 5
+      delay: 10
+      tags:
+        - k3s_upgrade
+
+    - name: Wait for 'Ready' status for the worker node
+      ansible.builtin.command: k3s kubectl get node {{ inventory_hostname }} -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
+      environment:
+        KUBECONFIG: "{{ k3s_kubeconfig }}"
+      delegate_to: "{{ groups['k3s_master'][0] }}"
+      register: node_status
+      until: node_status.stdout == "True"
+      retries: 15
+      delay: 10
+      tags:
+        - k3s_upgrade
+
+    - name: Uncordon worker node
+      ansible.builtin.command: k3s kubectl uncordon {{ inventory_hostname }}
+      environment:
+        KUBECONFIG: "{{ k3s_kubeconfig }}"
+      delegate_to: "{{ groups['k3s_master'][0] }}"
+      when: k3s_target_version != current_k3s_version.stdout
+      tags:
+        - k3s_upgrade
