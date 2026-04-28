@@ -10,6 +10,6 @@ images:
   - name: mylosz/fap-log-viewer-backend
     newTag: 1.0.4
   - name: mylosz/fap-log-viewer-analyser
-    newTag: 1.0.4
+    newTag: 1.0.3
   - name: mylosz/fap-log-viewer-email-receiver
     newTag: 1.0.3
