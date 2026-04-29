@@ -6,7 +6,7 @@ resources:
 
 images:
   - name: mylosz/fap-log-viewer-frontend
-    newTag: 1.0.4
+    newTag: 1.0.5
   - name: mylosz/fap-log-viewer-backend
     newTag: 1.0.6
   - name: mylosz/fap-log-viewer-analyser
